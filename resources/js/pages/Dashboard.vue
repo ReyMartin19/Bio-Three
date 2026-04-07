@@ -1,16 +1,25 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Users, Clock, ArrowRightLeft } from 'lucide-vue-next';
+import { Users, Clock, ArrowRightLeft, Filter, X } from 'lucide-vue-next';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import { dashboard } from '@/routes';
+import { onMounted, onUnmounted } from 'vue';
+
+let interval: ReturnType<typeof setInterval>;
 
 const props = defineProps<{
     users: any[];
     checkinouts: any[];
+    filters: {
+        start_date?: string;
+        end_date?: string;
+    };
 }>();
 
-const activeTab = ref('users');
+const activeTab = ref(props.filters.start_date || props.filters.end_date ? 'logs' : 'users');
+const startDate = ref(props.filters.start_date || '');
+const endDate = ref(props.filters.end_date || '');
 
 const tabs = [
     { id: 'users', label: 'User Directory', icon: Users },
@@ -27,6 +36,25 @@ defineOptions({
         ],
     },
 });
+
+const handleFilter = () => {
+    router.get(dashboard(), {
+        start_date: startDate.value,
+        end_date: endDate.value,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
+
+const handleReset = () => {
+    startDate.value = '';
+    endDate.value = '';
+    router.get(dashboard(), {}, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+};
 
 const getCheckTypeLabel = (type: number) => {
     const types: Record<number, string> = {
@@ -56,6 +84,16 @@ const formatDate = (dateString: string) => {
         second: '2-digit',
     });
 };
+
+onMounted(() => {
+    interval = setInterval(() => {
+        router.reload({ only: ['checkinouts', 'users'] });
+    }, 10000); // refresh every 10 seconds
+});
+
+onUnmounted(() => {
+    clearInterval(interval);
+});
 </script>
 
 <template>
@@ -110,8 +148,41 @@ const formatDate = (dateString: string) => {
                         {{ tab.label }}
                     </button>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-medium text-muted-foreground">Showing {{ activeTab === 'users' ? users.length : checkinouts.length }} results</span>
+                <div class="flex items-center gap-3">
+                    <div v-if="activeTab === 'logs'" class="mr-2 flex items-center gap-2 animate-in fade-in slide-in-from-right-2 duration-300">
+                        <div class="flex items-center gap-1.5 rounded-lg border border-sidebar-border/50 bg-muted/40 px-2 py-1">
+                            <span class="text-[10px] font-bold uppercase text-muted-foreground/70">From</span>
+                            <input
+                                type="date"
+                                v-model="startDate"
+                                class="bg-transparent text-xs font-medium outline-none focus:ring-0"
+                            />
+                        </div>
+                        <div class="flex items-center gap-1.5 rounded-lg border border-sidebar-border/50 bg-muted/40 px-2 py-1">
+                            <span class="text-[10px] font-bold uppercase text-muted-foreground/70">To</span>
+                            <input
+                                type="date"
+                                v-model="endDate"
+                                class="bg-transparent text-xs font-medium outline-none focus:ring-0"
+                            />
+                        </div>
+                        <button
+                            @click="handleFilter"
+                            class="flex items-center gap-1.5 rounded-lg bg-foreground px-3 py-1.5 text-xs font-bold text-background transition-all hover:opacity-90 active:scale-95"
+                        >
+                            <Filter class="h-3 w-3" />
+                            Filter
+                        </button>
+                        <button
+                            v-if="startDate || endDate"
+                            @click="handleReset"
+                            class="flex h-7 w-7 items-center justify-center rounded-lg border border-sidebar-border/70 text-muted-foreground transition-all hover:bg-muted hover:text-foreground active:scale-95"
+                            title="Reset Filter"
+                        >
+                            <X class="h-3 w-3" />
+                        </button>
+                    </div>
+                    <span class="text-xs font-medium text-muted-foreground tracking-tight">Showing {{ activeTab === 'users' ? users.length : checkinouts.length }} results</span>
                 </div>
             </div>
 
