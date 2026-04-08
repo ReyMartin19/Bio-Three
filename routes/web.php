@@ -14,6 +14,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dtr/export', [DtrController::class, 'export'])->name('dtr.export');
     Route::resource('departments', DepartmentController::class);
+    Route::resource('employees', \App\Http\Controllers\EmployeeController::class);
 });
 
 require __DIR__.'/settings.php';

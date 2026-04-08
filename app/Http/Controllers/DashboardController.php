@@ -27,7 +27,6 @@ class DashboardController extends Controller
         }
 
         return inertia('Dashboard', [
-            'users' => Userinfo::with('dept')->get(),
             'checkinouts' => $query->take(500)->get(),
             'filters' => $request->only(['start_date', 'end_date']),
         ]);

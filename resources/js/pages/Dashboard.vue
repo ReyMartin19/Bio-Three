@@ -4,12 +4,12 @@ import { ref } from 'vue';
 import { Users, Clock, ArrowRightLeft, Filter, X, FileDown } from 'lucide-vue-next';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import { dashboard } from '@/routes';
+import employees from '@/routes/employees';
 import { onMounted, onUnmounted } from 'vue';
 
 let interval: ReturnType<typeof setInterval>;
 
 const props = defineProps<{
-    users: any[];
     checkinouts: any[];
     filters: {
         start_date?: string;
@@ -17,12 +17,11 @@ const props = defineProps<{
     };
 }>();
 
-const activeTab = ref(props.filters.start_date || props.filters.end_date ? 'logs' : 'users');
+const activeTab = ref('logs');
 const startDate = ref(props.filters.start_date || '');
 const endDate = ref(props.filters.end_date || '');
 
 const tabs = [
-    { id: 'users', label: 'User Directory', icon: Users },
     { id: 'logs', label: 'Check-In/Out Logs', icon: Clock },
 ];
 
@@ -87,7 +86,7 @@ const formatDate = (dateString: string) => {
 
 onMounted(() => {
     interval = setInterval(() => {
-        router.reload({ only: ['checkinouts', 'users'] });
+        router.reload({ only: ['checkinouts'] });
     }, 10000); // refresh every 10 seconds
 });
 
@@ -102,22 +101,14 @@ onUnmounted(() => {
     <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl p-6">
         <!-- Stats Grid -->
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div class="relative aspect-video overflow-hidden rounded-2xl border border-sidebar-border/70 bg-sidebar p-6 shadow-sm transition-all hover:shadow-md dark:border-sidebar-border">
+            <Link :href="employees.index().url" class="relative aspect-video overflow-hidden rounded-2xl border border-sidebar-border/70 bg-sidebar p-6 shadow-sm transition-all hover:shadow-md hover:border-sidebar-border-hover dark:border-sidebar-border group">
                 <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Total Users</span>
-                    <span class="text-4xl font-black tracking-tight">{{ users.length }}</span>
+                    <span class="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Total Employees</span>
+                    <span class="text-4xl font-black tracking-tight">View List</span>
                 </div>
-                <Users class="absolute bottom-4 right-4 h-12 w-12 text-foreground/5" />
+                <Users class="absolute bottom-4 right-4 h-12 w-12 text-foreground/5 transition-transform group-hover:scale-110" />
                 <PlaceholderPattern class="absolute inset-0 -z-10 opacity-10" />
-            </div>
-            <div class="relative aspect-video overflow-hidden rounded-2xl border border-sidebar-border/70 bg-sidebar p-6 shadow-sm transition-all hover:shadow-md dark:border-sidebar-border">
-                <div class="flex flex-col gap-1">
-                    <span class="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Departments</span>
-                    <span class="text-4xl font-black tracking-tight">{{ Array.from(new Set(users.map(u => u.Deptid))).length }}</span>
-                </div>
-                <ArrowRightLeft class="absolute bottom-4 right-4 h-12 w-12 text-foreground/5" />
-                <PlaceholderPattern class="absolute inset-0 -z-10 opacity-10" />
-            </div>
+            </Link>
             <div class="relative aspect-video overflow-hidden rounded-2xl border border-sidebar-border/70 bg-sidebar p-6 shadow-sm transition-all hover:shadow-md dark:border-sidebar-border">
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Logged Events</span>
@@ -182,76 +173,12 @@ onUnmounted(() => {
                             <X class="h-3 w-3" />
                         </button>
                     </div>
-                    <span class="text-xs font-medium text-muted-foreground tracking-tight">Showing {{ activeTab === 'users' ? users.length : checkinouts.length }} results</span>
+                    <span class="text-xs font-medium text-muted-foreground tracking-tight">Showing {{ checkinouts.length }} results</span>
                 </div>
             </div>
 
             <!-- Tab Content -->
             <div class="flex-1 overflow-auto p-6">
-                <!-- User Table -->
-                <div v-if="activeTab === 'users'" class="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm border-separate border-spacing-0">
-                            <thead>
-                                <tr class="text-muted-foreground/80">
-                                    <th class="pb-4 font-medium uppercase tracking-wider">User</th>
-                                    <th class="pb-4 font-medium uppercase tracking-wider">Code</th>
-                                    <th class="pb-4 font-medium uppercase tracking-wider text-center">Sex</th>
-                                    <th class="pb-4 font-medium uppercase tracking-wider">Department</th>
-                                    <th class="pb-4 font-medium uppercase tracking-wider">Duty</th>
-                                    <th class="pb-4 font-medium uppercase tracking-wider">Contact</th>
-                                    <th class="pb-4 font-medium uppercase tracking-wider text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="user in users" :key="user.Userid" class="group transition-colors hover:bg-muted/30">
-                                    <td class="py-4 pr-4 align-top">
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-foreground">{{ user.Name }}</span>
-                                            <span class="text-[10px] font-mono uppercase text-muted-foreground">{{ user.Userid }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 pr-4 align-top font-mono text-xs">{{ user.UserCode }}</td>
-                                    <td class="py-4 pr-4 text-center align-top">
-                                        <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-muted text-[10px] font-bold">
-                                            {{ user.Sex }}
-                                        </span>
-                                    </td>
-                                    <td class="py-4 pr-4 align-top">
-                                        <span v-if="user.dept" class="inline-flex items-center rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-tight ring-1 ring-inset ring-foreground/10 bg-muted/50">
-                                            {{ user.dept.DeptName }}
-                                        </span>
-                                        <span v-else class="text-muted-foreground italic text-xs">Unassigned</span>
-                                    </td>
-                                    <td class="py-4 pr-4 align-top text-muted-foreground leading-relaxed">{{ user.Duty || '-' }}</td>
-                                    <td class="py-4 align-top">
-                                        <div class="flex flex-col text-xs">
-                                            <span class="text-foreground/80 font-medium">{{ user.Telephone || '-' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 align-top text-right">
-                                        <a 
-                                            :href="'/dtr/export?user_id=' + user.Userid" 
-                                            class="inline-flex items-center gap-1.5 rounded-lg border border-sidebar-border/70 px-3 py-1.5 text-xs font-bold text-muted-foreground transition-all hover:bg-muted hover:text-foreground active:scale-95 transition-all"
-                                            title="Export Monthly DTR"
-                                        >
-                                            <FileDown class="h-3 w-3" />
-                                            Export
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr v-if="users.length === 0">
-                                    <td colspan="6" class="py-20 text-center">
-                                        <div class="flex flex-col items-center gap-2 opacity-40">
-                                            <Users class="h-12 w-12" />
-                                            <span class="text-lg font-medium">No users found</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
                 <!-- Checkinout Table -->
                 <div v-if="activeTab === 'logs'" class="animate-in fade-in slide-in-from-bottom-2 duration-300">
