@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Dept extends Model
 {
+    use HasFactory;
+
     protected $table = 'dept';
 
     protected $primaryKey = 'Deptid';
@@ -21,7 +25,7 @@ class Dept extends Model
     /**
      * Get the users who belong to this department.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Userinfo, \App\Models\Dept>
+     * @return HasMany<Userinfo, Dept>
      */
     public function users()
     {

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Dept;
+use App\Observers\DeptObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Dept::observe(DeptObserver::class);
         $this->configureDefaults();
     }
 

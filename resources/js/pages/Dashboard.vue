@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Users, Clock, ArrowRightLeft, Filter, X } from 'lucide-vue-next';
+import { Users, Clock, ArrowRightLeft, Filter, X, FileDown } from 'lucide-vue-next';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import { dashboard } from '@/routes';
 import { onMounted, onUnmounted } from 'vue';
@@ -200,6 +200,7 @@ onUnmounted(() => {
                                     <th class="pb-4 font-medium uppercase tracking-wider">Department</th>
                                     <th class="pb-4 font-medium uppercase tracking-wider">Duty</th>
                                     <th class="pb-4 font-medium uppercase tracking-wider">Contact</th>
+                                    <th class="pb-4 font-medium uppercase tracking-wider text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -227,6 +228,16 @@ onUnmounted(() => {
                                         <div class="flex flex-col text-xs">
                                             <span class="text-foreground/80 font-medium">{{ user.Telephone || '-' }}</span>
                                         </div>
+                                    </td>
+                                    <td class="py-4 align-top text-right">
+                                        <a 
+                                            :href="'/dtr/export?user_id=' + user.Userid" 
+                                            class="inline-flex items-center gap-1.5 rounded-lg border border-sidebar-border/70 px-3 py-1.5 text-xs font-bold text-muted-foreground transition-all hover:bg-muted hover:text-foreground active:scale-95 transition-all"
+                                            title="Export Monthly DTR"
+                                        >
+                                            <FileDown class="h-3 w-3" />
+                                            Export
+                                        </a>
                                     </td>
                                 </tr>
                                 <tr v-if="users.length === 0">
