@@ -15,7 +15,6 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import departments from '@/routes/departments';
 import employees from '@/routes/employees';
 import type { NavItem } from '@/types';
 
@@ -24,11 +23,6 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
-    },
-    {
-        title: 'Departments',
-        href: departments.index().url,
-        icon: Building2,
     },
     {
         title: 'Employees',
