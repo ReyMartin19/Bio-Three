@@ -29,8 +29,8 @@ class DtrController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:userinfo,Userid',
-            'month' => 'required|integer|between:1,12',
-            'year' => 'required|integer',
+            'month' => 'nullable|integer|between:1,12',
+            'year' => 'nullable|integer',
         ]);
 
         $userid = $request->user_id;
@@ -122,10 +122,10 @@ class DtrController extends Controller
             // PM In: first punch between 12 PM and 3 PM (if AM Out is before this)
             // PM Out: latest punch after 3 PM
 
-            $am_in = $dayLogs->filter(fn ($l) => Carbon::parse($l->CheckTime)->hour < 10)->first();
-            $am_out = $dayLogs->filter(fn ($l) => Carbon::parse($l->CheckTime)->hour >= 10 && Carbon::parse($l->CheckTime)->hour < 13)->first();
-            $pm_in = $dayLogs->filter(fn ($l) => Carbon::parse($l->CheckTime)->hour >= 12 && Carbon::parse($l->CheckTime)->hour < 15)->first();
-            $pm_out = $dayLogs->filter(fn ($l) => Carbon::parse($l->CheckTime)->hour >= 15)->last();
+            $am_in = $dayLogs->filter(fn($l) => Carbon::parse($l->CheckTime)->hour < 10)->first();
+            $am_out = $dayLogs->filter(fn($l) => Carbon::parse($l->CheckTime)->hour >= 10 && Carbon::parse($l->CheckTime)->hour < 13)->first();
+            $pm_in = $dayLogs->filter(fn($l) => Carbon::parse($l->CheckTime)->hour >= 12 && Carbon::parse($l->CheckTime)->hour < 15)->first();
+            $pm_out = $dayLogs->filter(fn($l) => Carbon::parse($l->CheckTime)->hour >= 15)->last();
 
             if ($am_in) {
                 $dtrData[$day]['am_in'] = Carbon::parse($am_in->CheckTime)->format('H:i');

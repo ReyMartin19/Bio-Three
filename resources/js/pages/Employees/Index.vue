@@ -80,7 +80,7 @@ defineOptions({
                                 </td>
                                 <td class="py-4 align-top text-right">
                                     <a 
-                                        :href="'/dtr/export?user_id=' + user.Userid" 
+                                        :href="'/dtr/export?user_id=' + user.Userid"
                                         class="inline-flex items-center gap-1.5 rounded-lg border border-sidebar-border/70 px-3 py-1.5 text-xs font-bold text-muted-foreground transition-all hover:bg-muted hover:text-foreground active:scale-95 transition-all"
                                         title="Export Monthly DTR"
                                     >
