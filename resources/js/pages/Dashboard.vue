@@ -109,13 +109,13 @@ onUnmounted(() => {
                 <Users class="absolute bottom-4 right-4 h-12 w-12 text-foreground/5 transition-transform group-hover:scale-110" />
                 <PlaceholderPattern class="absolute inset-0 -z-10 opacity-10" />
             </Link>
-            <div class="relative aspect-video overflow-hidden rounded-2xl border border-sidebar-border/70 bg-sidebar p-6 shadow-sm transition-all hover:shadow-md dark:border-sidebar-border">
+            <div class="relative overflow-hidden rounded-2xl border border-sidebar-border/70 bg-sidebar p-6 shadow-sm transition-all hover:shadow-md dark:border-sidebar-border">
                 <div class="flex flex-col gap-1">
                     <span class="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Logged Events</span>
                     <span class="text-4xl font-black tracking-tight">{{ checkinouts.length }}</span>
                 </div>
-                <Clock class="absolute bottom-4 right-4 h-12 w-12 text-foreground/5" />
-                <PlaceholderPattern class="absolute inset-0 -z-10 opacity-10" />
+                <!-- <Clock class="absolute bottom-4 right-4 h-12 w-12 text-foreground/5" />
+                <PlaceholderPattern class="absolute inset-0 -z-10 opacity-10" /> -->
             </div>
         </div>
 
