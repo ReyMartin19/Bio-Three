@@ -24,7 +24,7 @@ class SyncBiometrics extends Command
         ],
         'dept' => [
             'pk' => 'Deptid',
-            'columns' => ['Deptid', 'Deptname'],
+            'columns' => ['Deptid', 'DeptName'],
         ],
     ];
 
