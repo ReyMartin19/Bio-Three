@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DepartmentController;
+
 use App\Http\Controllers\DtrController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dtr', [DtrController::class, 'index'])->name('dtr.index');
     Route::get('dtr/export', [DtrController::class, 'export'])->name('dtr.export');
     Route::get('dtr/bulk-export', [DtrController::class, 'bulkExport'])->name('dtr.bulk-export');
-    Route::resource('departments', DepartmentController::class);
+
     Route::resource('employees', EmployeeController::class);
 });
 
