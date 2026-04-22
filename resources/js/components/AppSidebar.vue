@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Building2, FolderGit2, LayoutGrid, Users } from 'lucide-vue-next';
+import { BookOpen, Building2, Clock, FolderGit2, LayoutGrid, Users } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import employees from '@/routes/employees';
+import dtr from '@/routes/dtr';
 import type { NavItem } from '@/types';
 
 const mainNavItems: NavItem[] = [
@@ -29,6 +30,11 @@ const mainNavItems: NavItem[] = [
         href: employees.index().url,
         icon: Users,
     },
+    {
+        title: 'Dtr',
+        href: dtr.index().url,
+        icon: Clock,
+    }
 ];
 
 </script>
