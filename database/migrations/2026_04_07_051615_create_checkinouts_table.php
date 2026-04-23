@@ -11,9 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('checkinouts', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::create('checkinout', function (Blueprint $table) {
+            $table->integer('Logid')->autoIncrement();
+            $table->string('Userid')->nullable();
+            $table->dateTime('CheckTime')->nullable();
+            $table->string('CheckType', 50)->nullable();
+            $table->integer('Sensorid')->nullable();
+            $table->integer('WorkType')->nullable();
+            $table->integer('AttFlag')->nullable();
+            $table->boolean('Checked')->default(0);
+            $table->boolean('Exported')->default(0);
+            $table->boolean('OpenDoorFlag')->default(0);
         });
     }
 
@@ -22,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('checkinouts');
+        Schema::dropIfExists('checkinout');
     }
 };

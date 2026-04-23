@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Checkinout;
 use App\Models\Dept;
+use App\Observers\CheckinoutObserver;
 use App\Observers\DeptObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Dept::observe(DeptObserver::class);
+        Checkinout::observe(CheckinoutObserver::class);
         $this->configureDefaults();
     }
 
