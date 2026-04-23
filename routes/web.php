@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\AttendanceDashboardController;
+use App\Http\Controllers\WorkArrangementController;
 use App\Http\Controllers\DtrController;
 use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dtr/bulk-export', [DtrController::class, 'bulkExport'])->name('dtr.bulk-export');
 
     Route::resource('employees', EmployeeController::class);
+
+    Route::get('attendance-dashboard', [AttendanceDashboardController::class, 'index'])->name('attendance.dashboard');
+    Route::resource('work-arrangements', WorkArrangementController::class);
 });
 
 require __DIR__ . '/settings.php';
