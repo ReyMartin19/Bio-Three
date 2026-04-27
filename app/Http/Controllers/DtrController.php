@@ -85,6 +85,9 @@ class DtrController extends Controller
             'monthName' => $data['monthName'],
             'year' => $data['year'],
             'dtrData' => $data['dtrData'],
+            'total_undertime_hours' => $data['total_undertime_hours'],
+            'total_undertime_minutes' => $data['total_undertime_minutes'],
+            'total_days_logged' => $data['total_days_logged'],
         ]);
 
         return $pdf->setPaper('a4')->download("DTR_{$data['user']->Name}_{$year}_{$month}.pdf");
@@ -103,7 +106,9 @@ class DtrController extends Controller
 
         $summaries = AttendanceSummary::where('userid', $userid)
             ->whereBetween('record_date', [$startDate->toDateString(), $endDate->toDateString()])
-            ->get()->keyBy('record_date');
+            ->get()->keyBy(function ($summary) {
+                return $summary->record_date->format('Y-m-d');
+            });
 
         $dtrData = [];
         $daysInMonth = $startDate->daysInMonth;
@@ -163,12 +168,16 @@ class DtrController extends Controller
 
         $totalUH = 0;
         $totalUM = 0;
+        $totalDaysLogged = 0;
         foreach ($dtrData as $day => $data) {
             if (isset($data['undertime_hours'])) {
                 $totalUH += $data['undertime_hours'];
             }
             if (isset($data['undertime_minutes'])) {
                 $totalUM += $data['undertime_minutes'];
+            }
+            if ($data['am_in'] || $data['am_out'] || $data['pm_in'] || $data['pm_out']) {
+                $totalDaysLogged++;
             }
         }
         $totalUH += intdiv($totalUM, 60);
@@ -181,6 +190,7 @@ class DtrController extends Controller
             'dtrData' => $dtrData,
             'total_undertime_hours' => $totalUH ?: '',
             'total_undertime_minutes' => $totalUM ?: '',
+            'total_days_logged' => $totalDaysLogged,
         ];
     }
 }

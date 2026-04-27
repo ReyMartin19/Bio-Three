@@ -175,9 +175,10 @@
                 </tr>
                 @endforeach
                 <tr>
-                    <td colspan="5" style="text-align: right; font-weight: bold; padding-right: 15px;">TOTAL</td>
-                    <td style="font-weight: bold;">{{ $dtrData['total_undertime_hours'] ?? $total_undertime_hours }}</td>
-                    <td style="font-weight: bold;">{{ $dtrData['total_undertime_minutes'] ?? $total_undertime_minutes }}</td>
+                    <td colspan="3" style="text-align: left; padding-left: 5px;">Days: {{ $total_days_logged }}</td>
+                    <td colspan="2"></td>
+                    <td>{{ $total_undertime_hours }}</td>
+                    <td>{{ $total_undertime_minutes }}</td>
                 </tr>
             </tbody>
         </table>

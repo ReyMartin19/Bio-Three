@@ -33,6 +33,18 @@ class AttendanceService
         $timeIn = Carbon::parse($punches->first()->CheckTime);
         $timeOut = $punches->count() > 1 ? Carbon::parse($punches->last()->CheckTime) : null;
 
+        $computableTimeIn = $timeIn->copy();
+        $startTimeLimit = Carbon::parse($date->toDateString() . ' 07:00:00');
+        if ($computableTimeIn->lessThan($startTimeLimit)) {
+            $computableTimeIn = $startTimeLimit;
+        }
+
+        $computableTimeOut = $timeOut ? $timeOut->copy() : null;
+        $endTimeLimit = Carbon::parse($date->toDateString() . ' 18:00:00');
+        if ($computableTimeOut && $computableTimeOut->greaterThan($endTimeLimit)) {
+            $computableTimeOut = $endTimeLimit;
+        }
+
         $arrangement = WorkArrangementExt::where('userid', $user->Userid)
             ->where('status', 'Approved')
             ->where(function ($query) use ($date) {
@@ -48,9 +60,11 @@ class AttendanceService
         $schClassId = $arrangement ? $arrangement->schclassid : 2; // Default to 8-5 (schclassid = 2)
 
         $lateThreshold = Carbon::parse($date->toDateString().' 08:15:00');
+        $baseTimeForLate = Carbon::parse($date->toDateString().' 08:00:00');
 
         if ($date->isMonday()) {
             $lateThreshold = Carbon::parse($date->toDateString().' 08:00:00');
+            $baseTimeForLate = $lateThreshold->copy();
         } else {
             if ($arrangementType === 'Full Flexi') {
                 $lateThreshold = Carbon::parse($date->toDateString().' 09:15:00');
@@ -67,6 +81,7 @@ class AttendanceService
             } elseif ($arrangementType === 'WFH') {
                 $lateThreshold = Carbon::parse($date->toDateString().' 08:15:00');
             }
+            $baseTimeForLate = $lateThreshold->copy()->subMinutes(15);
         }
 
         $isLate = false;
@@ -74,16 +89,15 @@ class AttendanceService
 
         if ($timeIn->greaterThan($lateThreshold)) {
             $isLate = true;
-            $baseTime = $lateThreshold->copy()->subMinutes(15);
-            $lateMinutes = (int) $timeIn->diffInMinutes($baseTime, true);
+            $lateMinutes = (int) $timeIn->diffInMinutes($baseTimeForLate, true);
         }
 
         $totalHours = 0;
         $isUndertime = false;
         $undertimeMinutes = 0;
 
-        if ($timeOut) {
-            $rawHours = $timeIn->diffInMinutes($timeOut) / 60;
+        if ($computableTimeOut) {
+            $rawHours = $computableTimeIn->diffInMinutes($computableTimeOut) / 60;
             $workHours = max(0, $rawHours > 5 ? $rawHours - 1 : $rawHours);
             $totalHours = round($workHours, 2);
 

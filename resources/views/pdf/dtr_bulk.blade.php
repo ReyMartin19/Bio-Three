@@ -20,6 +20,9 @@
                 'monthName' => $data['monthName'],
                 'year' => $data['year'],
                 'dtrData' => $data['dtrData'],
+                'total_undertime_hours' => $data['total_undertime_hours'],
+                'total_undertime_minutes' => $data['total_undertime_minutes'],
+                'total_days_logged' => $data['total_days_logged'],
             ])
         </div>
     @endforeach
