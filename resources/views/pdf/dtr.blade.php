@@ -170,14 +170,14 @@
                     <td>{{ $formatTime($data['am_out']) }}</td>
                     <td>{{ $formatTime($data['pm_in']) }}</td>
                     <td>{{ $formatTime($data['pm_out']) }}</td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ $data['undertime_hours'] ?? '' }}</td>
+                    <td>{{ $data['undertime_minutes'] ?? '' }}</td>
                 </tr>
                 @endforeach
                 <tr>
-                    <td colspan="5" style="text-align: left;">Days: </td>
-                    <td></td>
-                    <td></td>
+                    <td colspan="5" style="text-align: right; font-weight: bold; padding-right: 15px;">TOTAL</td>
+                    <td style="font-weight: bold;">{{ $dtrData['total_undertime_hours'] ?? $total_undertime_hours }}</td>
+                    <td style="font-weight: bold;">{{ $dtrData['total_undertime_minutes'] ?? $total_undertime_minutes }}</td>
                 </tr>
             </tbody>
         </table>

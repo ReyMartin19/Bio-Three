@@ -10,23 +10,11 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DeptFactory extends Factory
 {
-    /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
-    protected $model = Dept::class;
-
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'DeptName' => $this->faker->unique()->word(),
-            'SupDeptid' => 0,
+            'DeptName' => fake()->company(),
+            'SupDeptid' => 1,
         ];
     }
 }

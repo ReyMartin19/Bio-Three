@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AttendanceSummary;
 use App\Models\Checkinout;
 use App\Models\Dept;
 use App\Models\Userinfo;
@@ -100,6 +101,10 @@ class DtrController extends Controller
             ->orderBy('CheckTime')
             ->get();
 
+        $summaries = AttendanceSummary::where('userid', $userid)
+            ->whereBetween('record_date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get()->keyBy('record_date');
+
         $dtrData = [];
         $daysInMonth = $startDate->daysInMonth;
 
@@ -122,10 +127,10 @@ class DtrController extends Controller
             // PM In: first punch between 12 PM and 3 PM (if AM Out is before this)
             // PM Out: latest punch after 3 PM
 
-            $am_in = $dayLogs->filter(fn($l) => Carbon::parse($l->CheckTime)->hour < 10)->first();
-            $am_out = $dayLogs->filter(fn($l) => Carbon::parse($l->CheckTime)->hour >= 10 && Carbon::parse($l->CheckTime)->hour < 13)->first();
-            $pm_in = $dayLogs->filter(fn($l) => Carbon::parse($l->CheckTime)->hour >= 12 && Carbon::parse($l->CheckTime)->hour < 15)->first();
-            $pm_out = $dayLogs->filter(fn($l) => Carbon::parse($l->CheckTime)->hour >= 15)->last();
+            $am_in = $dayLogs->filter(fn ($l) => Carbon::parse($l->CheckTime)->hour < 10)->first();
+            $am_out = $dayLogs->filter(fn ($l) => Carbon::parse($l->CheckTime)->hour >= 10 && Carbon::parse($l->CheckTime)->hour < 13)->first();
+            $pm_in = $dayLogs->filter(fn ($l) => Carbon::parse($l->CheckTime)->hour >= 12 && Carbon::parse($l->CheckTime)->hour < 15)->first();
+            $pm_out = $dayLogs->filter(fn ($l) => Carbon::parse($l->CheckTime)->hour >= 15)->last();
 
             if ($am_in) {
                 $dtrData[$day]['am_in'] = Carbon::parse($am_in->CheckTime)->format('H:i');
@@ -139,13 +144,43 @@ class DtrController extends Controller
             if ($pm_out) {
                 $dtrData[$day]['pm_out'] = Carbon::parse($pm_out->CheckTime)->format('H:i');
             }
+
+            $summary = $summaries->get($date);
+            $undertimeMins = 0;
+            $undertimeHours = 0;
+
+            if ($summary) {
+                $totalMins = $summary->late_minutes + $summary->undertime_minutes;
+                if ($totalMins > 0) {
+                    $undertimeHours = intdiv($totalMins, 60);
+                    $undertimeMins = $totalMins % 60;
+                }
+            }
+
+            $dtrData[$day]['undertime_hours'] = $undertimeHours ?: null;
+            $dtrData[$day]['undertime_minutes'] = $undertimeMins ?: null;
         }
+
+        $totalUH = 0;
+        $totalUM = 0;
+        foreach ($dtrData as $day => $data) {
+            if (isset($data['undertime_hours'])) {
+                $totalUH += $data['undertime_hours'];
+            }
+            if (isset($data['undertime_minutes'])) {
+                $totalUM += $data['undertime_minutes'];
+            }
+        }
+        $totalUH += intdiv($totalUM, 60);
+        $totalUM = $totalUM % 60;
 
         return [
             'user' => $user,
             'monthName' => $startDate->format('F'),
             'year' => $year,
             'dtrData' => $dtrData,
+            'total_undertime_hours' => $totalUH ?: '',
+            'total_undertime_minutes' => $totalUM ?: '',
         ];
     }
 }
